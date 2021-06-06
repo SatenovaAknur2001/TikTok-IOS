@@ -13,6 +13,7 @@ import UIKit
 struct PostModel {
     let identifier: String
     
+    let user = User(username: "ececewcewc", profilePicturedURL: nil, identifier: UUID().uuidString)
     var isLikedByCurrentUser = false
     
     static func mockModels() -> [PostModel] {

@@ -6,27 +6,31 @@
 //  Copyright © 2021 Aknur. All rights reserved.
 //
 
+
 import UIKit
 
 protocol CommentsViewControllerDelegate: AnyObject{
     func didTapCloseForComments(with viewController: CommentViewController)
 }
+
 class CommentViewController: UIViewController {
 
     
     private let post:PostModel
     
     weak var delegate: CommentsViewControllerDelegate?
+    
     private var comments = [PostComment]()
     private let tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell"
+        tableView.register(CommentTableViewCell.self, forCellReuseIdentifier: CommentTableViewCell.identifier
         )
         return tableView
     }()
     private let closeButton: UIButton = {
        let button = UIButton()
-        button.setBackgroundImage(UIImage(named: "xmark"), for: .normal)
+        // always use systemName type when working with SF symbols
+        button.setBackgroundImage(UIImage(systemName: "xmark"), for: .normal)
         button.tintColor = .black
         return button
     }()
@@ -41,17 +45,18 @@ class CommentViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         view.backgroundColor = .white
         view.addSubview(closeButton)
+        view.addSubview(tableView)
         closeButton.addTarget(self, action: #selector(didTapClose), for: .touchUpInside)
        fetchPostComments()
-        view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        closeButton.frame = CGRect(x: view.width - 45, y: 10, width: 35, height: 35)
+        closeButton.frame = CGRect(x: view.width - 45, y: 10 , width: 35, height: 35)
         tableView.frame = CGRect(x: 0, y: closeButton.bottom, width: view.width, height: view.width - closeButton.bottom)
     }
     @objc private func didTapClose(){
@@ -71,10 +76,17 @@ extension CommentViewController: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let comment = comments[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = comment.text
+        guard  let cell = tableView.dequeueReusableCell(withIdentifier: CommentTableViewCell.identifier, for: indexPath) as? CommentTableViewCell else {
+            return UITableViewCell()
+        }
+        cell.configure(with: comment)
+        
         return cell
     }
-    
-    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 80
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
 }

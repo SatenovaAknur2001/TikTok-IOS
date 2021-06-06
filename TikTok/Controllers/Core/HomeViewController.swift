@@ -6,7 +6,9 @@
 //  Copyright © 2021 Aknur. All rights reserved.
 //
 
+
 import UIKit
+
 
 class HomeViewController: UIViewController {
     
@@ -19,7 +21,7 @@ class HomeViewController: UIViewController {
         return scrollView
     }()
     
-     let control: UISegmentedControl = {
+    let control: UISegmentedControl = {
         let titles = ["Following", "For You"]
         let control = UISegmentedControl(items: titles)
         control.selectedSegmentIndex = 1
@@ -47,7 +49,7 @@ class HomeViewController: UIViewController {
         horizontalScrollView.delegate = self
         horizontalScrollView.contentOffset = CGPoint(x: view.width, y: 0)
         setupHeaderButtons()
-//        horizontalScrollView.contentOffset()
+        //        horizontalScrollView.contentOffset()
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -174,11 +176,17 @@ extension HomeViewController: UIScrollViewDelegate{
             control.selectedSegmentIndex = 1
         }
     }
+    func postViewController(_ vc: PostViewController, didTapProfileButtonFor post: PostModel){
+        let user = post.user
+        let vc = ProfileViewController(user: user)
+        navigationController?.pushViewController(vc, animated: true)
+        
+    }
 }
 
 extension HomeViewController: PostViewControllerDelegate {
     func postViewController(_ vc: PostViewController, didTapCommentButtonFor post: PostModel) {
-          func foo() {
+
             horizontalScrollView.isScrollEnabled = false
             if horizontalScrollView.contentOffset.x == 0 {
                 followingPageController.dataSource = nil
@@ -186,35 +194,42 @@ extension HomeViewController: PostViewControllerDelegate {
             else {
                 forYouPageViewController.dataSource = nil
             }
-              let vc = CommentViewController(post: post)
+            let vc = CommentViewController(post: post)
             vc.delegate = self
-                  addChild(vc)
-                  vc.didMove(toParent: self)
-                  view.addSubview(vc.view)
-                 
-          }
+            addChild(vc)
+            vc.didMove(toParent: self)
+            view.addSubview(vc.view)
+        // dont need foo  function i dont know why you are using it there
+        // also you forget to add the animation to frame
+        // happy coding 🌹
+        let frame: CGRect = CGRect(x: 0, y: view.height, width: view.width, height: view.height * 0.76)
+        vc.view.frame = frame
+        UIView.animate(withDuration: 0.2) {
+            
+            vc.view.frame = CGRect(x: 0, y: self.view.height - frame.height, width: frame.width, height: frame.height)
+
+        }
     }
 }
 
+
 extension HomeViewController: CommentsViewControllerDelegate {
     func didTapCloseForComments(with viewController: CommentViewController) {
+
         let frame = viewController.view.frame
-                         UIView.animate(withDuration: 0.2) {
-                             viewController.view.frame = CGRect(x: 0, y: self.view.height , width: frame.width, height: frame.height)
-                            
-        } completion: { [weak self] done in
+        UIView.animate(withDuration: 0.2, animations: {
+               viewController.view.frame = CGRect(x: 0, y: self.view.height , width: frame.width, height: frame.height)
+
+        }) { [weak self] done  in
             if done {
                 DispatchQueue.main.async {
-                     viewController.view.removeFromSuperview()
-                                   viewController.removeFromParent()
-                                   self?.horizontalScrollView.isScrollEnabled = true
-                                   self?.forYouPageViewController.dataSource = self
-                                   self?.followingPageController.dataSource = self
+                    viewController.view.removeFromSuperview()
+                    viewController.removeFromParent()
+                    self?.horizontalScrollView.isScrollEnabled = true
+                    self?.forYouPageViewController.dataSource = self
+                    self?.followingPageController.dataSource = self
                 }
-            }
-
-        }
-    
         }
     }
-
+}
+}
