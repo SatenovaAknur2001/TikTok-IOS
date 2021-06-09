@@ -40,7 +40,7 @@ class PostViewController: UIViewController {
       }()
     private let profileButton: UIButton = {
            let button = UIButton()
-            button.setBackgroundImage(UIImage(named: "test"), for: .normal)
+            button.setBackgroundImage(UIImage(named: "banner1"), for: .normal)
             button.tintColor = .white
         button.layer.masksToBounds = true
            button.imageView?.contentMode = .scaleAspectFill

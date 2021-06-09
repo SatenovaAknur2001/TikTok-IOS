@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 struct ExplorePostViewModel {
-    let thumbnaiImage: UIImage
+    let thumbnaiImage: UIImage?
     let caption: String
     let handler: (() -> Void)
 }
